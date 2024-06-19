@@ -9,10 +9,9 @@
 # External imports
 
 # Internal imports
-from .fastx import read
-from .fastx import write
-from .kmer import read
-from .kmer import write
+from .sample import *
+
+from .feature import *
 
 #------------------- Constants ------------------------------#
 

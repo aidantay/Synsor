@@ -61,12 +61,10 @@ def _readWithDask(*dirs, sample):
     dirpaths = [d + '/*.avro' for d in dirs]
     b = db.read_avro(dirpaths)
     kmerDf = b.to_dataframe()
-    print(kmerDf)
 
     ## Repartition the dataframe to maximise the number of partitions used
     ## This will (hopefully) speed things up
     kmerDf = kmerDf.repartition(partition_size='10MB')
-    print(kmerDf)
 
     if (sample != 1.0):
         kmerDf = kmerDf.sample(frac=sample)

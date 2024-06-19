@@ -2,39 +2,6 @@
 
 #------------------- Description & Notes --------------------#
 
-'''
-Description:
-    Given a list of FASTA/FASTQ or SAM/BAM files, output (to file) the
-    frequencies for each oligonucleotide sequence of length K in a sequence/s.
-    Frequencies are calculated for each sequence record.
-
-Args:
-    fastXFiles (filepath):
-        List containing the filepath of each file. Files can be
-        compressed (.gz) and should contain at least one
-        sequence record (FASTA/FASTQ or SAM/BAM). Our processing limit
-        seems to be around 3.5 million (3,500,000) sequence records.
-
-    kmerLength (int):
-        Length of oligonucleotide sequences. Must be a positive integer.
-        Ideally, this should be <= 13 since the total number of possible
-        oligonucleotide sequences exponentially increases (4^K).
-            * 4^13 Kmers =    67,108,864  ## Possible
-            * 4^14 Kmers =   268,435,456  ## Sometimes possible
-            * 4^15 Kmers = 1,073,741,824  ## Probably not possible
-
-Returns:
-    oFile (dir):
-        Directory containing a list of files. Each file is bzip2
-        compressed in Avro format and contains the frequencies for each
-        oligonucleotide sequence of length K in a sequence/s.
-
-Most issues can be fixed with one of the following:
-* Increasing the number of partitions (i.e., spark.default.parallelism)
-* Increasing the amount of memory (i.e., spark.*.memory)
-* Splitting larger files into several smaller files
-'''
-
 #------------------- Dependencies ---------------------------#
 
 # Standard library imports

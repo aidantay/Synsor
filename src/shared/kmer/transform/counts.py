@@ -2,14 +2,6 @@
 
 #------------------- Description & Notes --------------------#
 
-'''
-We can reduce the number of K-mers by:
-* Clustering reverse complement counts (For relatively short K-mers, i.e. K < 5)
-
-We can reduce the number of samples by:
-* Clustering counts of related sequences
-'''
-
 #------------------- Dependencies ---------------------------#
 
 # Standard library imports

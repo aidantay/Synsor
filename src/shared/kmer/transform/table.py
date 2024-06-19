@@ -2,18 +2,6 @@
 
 #------------------- Description & Notes --------------------#
 
-'''
-We can reduce the number of K-mers by:
-* Removing correlated columns
-* Removing constant columns
-
-We can reduce the number of samples by:
-* Removing duplicate rows (For relatively short K-mers, i.e., K < 5)
-  This is actually good for highly related sequences. However, for distantly
-  related sequences, this won't actually do much because the counts become
-  more unique as the kmer length increases.
-'''
-
 #------------------- Dependencies ---------------------------#
 
 # Standard library imports

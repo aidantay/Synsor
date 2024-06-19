@@ -2,27 +2,6 @@
 
 #------------------- Description & Notes --------------------#
 
-'''
-Kmer frequencies only need to be calcuated in either the forward, or
-the reverse direction since they basically contain the same information.
-Specifically, for odd K-mers,  Frequencies(forward) == Frequencies(reverse).
-* Total N(AAA) = N(AAA, Forward) + N(AAA, Reverse)
-               = N(AAA, Forward) + N(TTT, Reverse)
-
-However, for even K-mers, Frequencies(forward) != Frequencies(reverse) because
-even K-mers can generate palindromes (Odd K-mers never generate palindromes)
-* Total N(AT) = N(AT, Forward) + N(AT, Reverse)
-              = N(AT, Forward) + N(AT, Forward)
-              = N(AT, Forward) * 2
-* Total N(AGCT) = N(AGCT, Forward) + N(AGCT, Reverse)
-*               = N(AGCT, Forward) + N(AGCT, Forward)
-*               = N(AGCT, Forward) * 2
-Thus, for these K-mers, the frequencies are doubled instead of additive.
-
-The above suggests that only odd K-mers should be considered to avoid the
-frequency biases due to different strands.
-'''
-
 #------------------- Dependencies ---------------------------#
 
 # Standard library imports
@@ -69,18 +48,6 @@ def getCounts(rdd, kmerLength, ignoreNs, countExp):
 
     else:
         print("Observed counts")
-        ## **********
-        ## *** Not sure if this is the "best" approach for split counts.
-        ## *** But seems to run the fastest!
-        ## ***
-        ## *** Using RDD ReduceByKey once to minimise shuffling can encounter
-        ## *** a few errors (not sure why).
-        ## ***
-        ## *** I've tried:
-        ## ***  * Using fewer lambda functions to reduce double serialisation.
-        ## ***  * Repartitioning before reducing. However, this doesn't seem to
-        ## ***    result in any major improvements since we're shuffling data twice.
-        ## **********
         kmerDf   = _getObservedCounts(rdd, kmerLength, ignoreNs)
         seqLenDf = _getSeqLengths(rdd)
         kmerDf   = _createKmerDf(kmerDf, seqLenDf)
@@ -130,24 +97,6 @@ def _createKmerDf(kmerDf, seqLenDf):
     return kmerDf
 
 def _getObservedSequences(seq, kmerLength):
-
-    """
-    Description:
-        Generates a list of Kmer sequences of length K in a sequence.
-
-    Args:
-        seq (str):
-            Sequence to be examined.
-
-        kmerLength (int):
-            Length of Kmers. Must be a positive integer.
-
-    Returns:
-        kmerSeqs (list):
-            List of str containing the Kmer sequences of length K
-            in the sequence record
-    """
-
     obsTotal = _getObservedTotal(seq, kmerLength)
     return (seq[i:i + kmerLength] for i in range(0, obsTotal))
 
