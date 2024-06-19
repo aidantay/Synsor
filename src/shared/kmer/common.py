@@ -41,24 +41,6 @@ def getSchema(countsAsInt=True):
     return schema
 
 def getExpectedSequences(kmerLength):
-
-    """
-    Description:
-        Generates a list of all possible Kmer sequences of length K.
-
-    Args:
-        kmerLength (int):
-            Length of Kmers. Must be a positive integer.
-
-    Returns:
-        kmerSeqs (generator):
-            List of all possible Kmer sequences.
-
-    Raises:
-        ValueError:
-            If kmerLength is not a positive integer.
-    """
-
     f = itertools.product(NUCLEOTIDES, repeat=kmerLength)
     return (''.join(c) for c in f)
 

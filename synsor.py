@@ -5,61 +5,91 @@
 #------------------- Dependencies ---------------------------#
 
 # # Standard library imports
+import argparse
 import os
 import time
+import sys
 
 # External imports
-import typer
-from typing import List, Optional
 from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
 
 # Internal imports
 from src.jobs import calculate_kmer_frequencies
-from src.jobs import model_kmer_frequencies
+from src.jobs import predict_engineered_sequences
+from src.jobs.aux import explore_kmer_frequencies
+from src.jobs.aux import select_models
+from src.jobs.aux import build_models
+from src.jobs.aux import train_test_models
 
 #------------------- Constants ------------------------------#
 
 #------------------- Public Classes & Functions -------------#
 
-def main(
-    i: List[str] = typer.Option([], help='FASTA/FASTQ files (.fa/.fq)'),
-    f: List[str] = typer.Option(..., help='Directory containing K-mer frequencies (.avro)'),
-    m: str = typer.Option(..., help='Predictive model (KerasClassifier)'),
-    o: str = typer.Option(..., help='Output file (.tsv)'),
-    t: int = typer.Option(8, help='Number of partitions')):
+def count(args):
+    """
+    K-mer frequency calculation
+    """
+    if (len(args.i) != 0):
+        ## Check that the FASTA files exist
+        if (not _validFastaFiles(args.i)):
+            raise Exception("Invalid files.")
 
+        print("Calculating K-mer frequencies")
+        with SparkSession.builder.config(conf=_getSparkConf(args.t)).getOrCreate() as spark:
+            calculate_kmer_frequencies.main(args.i, args.k, args.o)
+
+def predict(args):
     """
     Predict the engineering status of DNA sequences
     """
-
-    ## Calculate K-mer frequencies if they haven't been computed.
-    if (len(i) != 0):
-        ## Check that the FASTA files exist
-        if (not _validFastaFiles(i)):
-            raise Exception("Invalid files.")
-
-        ## Check that there's only 1 path to write Kmer frequencies
-        if (len(f) != 1):
-            raise Exception("Must have exactly 1 path to write Kmer frequencies.")
-
-        print("Calculating K-mer frequencies")
-        with SparkSession.builder.config(conf=_getSparkConf(t)).getOrCreate() as spark:
-            calculate_kmer_frequencies.main(i, 1, f[0])
-
     ## Check that the AVRO FREQ directories exist
-    if (not _validAvroDirs(f)):
+    if (not _validAvroDirs(args.f)):
         raise Exception("Invalid directories.")
 
+    ## Run a prediction using the provided model
     print("Predicting sequence class")
-    model_kmer_frequencies.main(f, m, o)
+    predict_engineered_sequences.main(args.f, [args.m], args.o)
 
 #------------------- Private Classes & Functions ------------#
 
+def _getParser():
+    def _addCountArgs(p, f):
+        p.add_argument('-i', dest='i', help='FASTA/FASTQ files (.fa/.fq)',
+            nargs='+', type=str, required=True)
+        p.add_argument('-k', dest='k', help='k-mer length',
+            type=int, required=True)
+        p.add_argument('-o', dest='o', help='Directory containing K-mer frequencies (.avro)',
+            type=str, required=True)
+        p.add_argument('-t', dest='t', help='Number of partitions',
+            nargs='?', type=int, default=8, required=False)
+        p.set_defaults(func=f)
+
+    def _addPredictArgs(p, f):
+        p.add_argument('-f', dest='f', help='Directory containing K-mer frequencies (.avro)',
+            nargs='+', type=str, required=True)
+        p.add_argument('-m', dest='m', help='Predictive model (KerasClassifier)',
+            type=str, required=True)
+        p.add_argument('-o', dest='o', help='Output file (.tsv)',
+            type=str, required=True)
+        p.set_defaults(func=f)
+
+    parser    = argparse.ArgumentParser()
+    subparser = parser.add_subparsers(dest='command')
+    c = subparser.add_parser('count')
+    p = subparser.add_parser('predict')
+    _addCountArgs(c, count)
+    _addPredictArgs(p, predict)
+    return parser
+
 def _getSparkConf(t):
+    pfx = os.path.dirname(os.path.realpath(__file__)) + '/resources'
+    p = pfx + "/spark-avro_2.12-3.3.1.jar"
+    q = pfx + "/src.zip"
     conf = (
         SparkConf()
-        .set("spark.jars", "resources/spark-avro_2.12-3.3.1.jar")
+        .set("spark.jars", p)
+        .set("spark.submit.pyFiles", q)
         .set("spark.driver.maxResultSize", "0")
         .set("spark.executor.heartbeatInterval", "60s")
         .set("spark.sql.autoBroadcastJoinThreshold", "-1")
@@ -81,6 +111,8 @@ def _validAvroDirs(dirs):
 #------------------- Main -----------------------------------#
 
 if (__name__ == "__main__"):
-    typer.run(main)
+    parser = _getParser()
+    args   = parser.parse_args()
+    args.func(args)
 
 #------------------------------------------------------------------------------

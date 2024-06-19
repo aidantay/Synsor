@@ -34,7 +34,7 @@ def main(iDirs, modelFiles, oFile):
 
     ## Write the tables to disk
     p = Path(oFile)
-    p.mkdir(parents=True, exist_ok=True)
+    p.parent.mkdir(parents=True, exist_ok=True)
     results.to_csv(oFile, sep='\t', index=False)
 
 #------------------- Private Classes & Functions ------------#
