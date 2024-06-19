@@ -1,4 +1,4 @@
-name: synbiodetector
+name: synsor
 
 channels:
   - conda-forge
