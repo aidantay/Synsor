@@ -82,6 +82,7 @@ def _prepareData(kmerDf):
     kmerId = kmerId.compute()
 
     kmerCount = kmerDf.categorize(columns=['kmer'])
+    kmerCount['count'] = kmerCount['count'].astype(float)
     kmerCount = kmerCount.pivot_table(index='seqId', columns='kmer', values='count')
     kmerCount.columns = [seqToInt(c) for c in kmerCount.columns]
     kmerCount = kmerCount.compute()
