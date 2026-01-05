@@ -11,6 +11,7 @@ import pytest
 from pyspark.sql import SparkSession
 
 # Internal imports
+from synsor import io
 
 #------------------- Constants ------------------------------#
 

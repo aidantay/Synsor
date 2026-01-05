@@ -24,7 +24,7 @@ TEST_DATA_FASTA        = 'test/data/seqs.fna'
 TEST_DATA_2MER_PARQUET = 'test/data/freqs_parquet_2mer'
 TEST_DATA_3MER_PARQUET = 'test/data/freqs_parquet_3mer'
 
-#------------------- Public Classes & Functions -------------#
+#------------------- Classes & Functions --------------------#
 
 def test_kmercounts_toDict(spark, evenKmerDf):
     df = transform.kmercounts.toDict(evenKmerDf)
@@ -185,21 +185,4 @@ def test_table_insertZeroCounts_even(spark, oddKmerDf):
     nKmers = df.select(schema.KMER_COL_NAME).distinct().count()
     assert nKmers == 32
 
-#------------------- Private Classes & Functions ------------#
-
-@pytest.fixture
-def evenKmerDf(spark):
-    df = io.kmer.read(Path(TEST_DATA_2MER_PARQUET))
-    return df
-
-@pytest.fixture
-def oddKmerDf(spark):
-    df = io.kmer.read(Path(TEST_DATA_3MER_PARQUET))
-    return df
-
 #------------------- Main -----------------------------------#
-
-if (__name__ == "__main__"):
-    main()
-
-#------------------------------------------------------------------------------
