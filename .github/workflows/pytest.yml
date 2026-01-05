@@ -37,5 +37,6 @@ jobs:
     # Step 5: Run pytest
     - name: Run tests
       run: |
+        conda init
         conda activate synsor
         pytest tests
