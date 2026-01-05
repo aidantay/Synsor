@@ -185,4 +185,14 @@ def test_table_insertZeroCounts_even(spark, oddKmerDf):
     nKmers = df.select(schema.KMER_COL_NAME).distinct().count()
     assert nKmers == 32
 
+@pytest.fixture
+def evenKmerDf(spark):
+    df = io.kmer.read(Path(TEST_DATA_2MER_PARQUET))
+    return df
+
+@pytest.fixture
+def oddKmerDf(spark):
+    df = io.kmer.read(Path(TEST_DATA_3MER_PARQUET))
+    return df
+
 #------------------- Main -----------------------------------#
