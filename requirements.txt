@@ -1,7 +1,5 @@
 biopython==1.84
 dask==2024.7.1
-dask-core==2024.7.1
-dask-expr==1.1.9
 distributed==2024.7.1
 fastavro==1.9.5
 keras==2.10.0
@@ -14,8 +12,4 @@ python==3.10.8
 scikit-learn==1.5.1
 scipy==1.14.0
 setuptools==72.1.0
-six==1.16.0
-snappy==1.1.10
 tensorflow==2.10.0
-tensorflow-base==2.10.0
-tensorflow-estimator==2.10.0
