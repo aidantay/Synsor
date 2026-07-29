@@ -85,4 +85,4 @@ Aidan P. Tay, Kieran Didi, Anuradha Wickramarachchi, Denis C. Bauer, Laurence O.
 
 ## Contact
 
-* Aidan Tay: a.tay@unswalumni.com
+* Aidan Tay: apsltay@outlook.com
